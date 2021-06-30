@@ -1,33 +1,59 @@
 import React from "react";
-import { MdDeleteForever, MdModeEdit } from "react-icons/md";
+import { NotesForm } from "./NotesForm";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
+import { useState } from "react";
 
-import styled, { css } from "styled-components";
+export const Note = ({ notes, completeNote, updateNote, removeNote, color, handleColorChange }) => {
+  const [edit, setEdit] = useState({
+    id: null,
+    value: "",
+    color: "#67d7cc"
+  });
 
-const Note = ({ date, id, text, color, deleteNote }) => {
-  // const Button = styled.button`
-  //   background: ${color};
-  //   border-radius: 3px;
-  //   border: 2px solid palevioletred;
-  //   color: palevioletred;
-  //   margin: 0 1em;
-  //   padding: 0.25em 1em;
-  // `;
+  const submitUpdate = (value) => {
+    updateNote(edit.id, value, color);
+    setEdit({
+      id: null,
+      value: "",
+      color: color
+    });
+  };
+
+  if (edit.id) {
+    return (
+      <>
+        <NotesForm style={{backgroundColor:color}} edit={edit} onSubmit={submitUpdate} />
+        <p>editing mode</p>
+      </>
+    );
+  }
 
   return (
-    <div className="note" style={{ backgroundColor: `${color} !important` }}>
-      {/* <Button>click me</Button> */}
-      <p>{text}</p>
-      <div className="note-footer">
-        <small>{date}</small>
-        <MdModeEdit />
-        <MdDeleteForever
-          onClick={() => deleteNote(id)}
-          className="delete-icon"
-          size="1.3em"
-        />
-      </div>
-    </div>
+    <>
+      {notes.map((note, i) => {
+        return (
+          <div key={`${i}`} className="note" style={{ backgroundColor: color }}>
+            {/* onClick={() => completeNote(note.id)} */}
+            <div key={`${i}`}>
+              {note.text}
+            </div>
+            <div className="notes-footer">
+              <small>{note.date}</small>
+              <MdEdit
+                onClick={() =>
+                  setEdit({
+                    id: note.id,
+                    value: note.text,
+                    date: note.date,
+                    color: note.color
+                  })
+                }
+              />
+            </div>
+            <MdDeleteForever onClick={() => removeNote(note.id)} />
+          </div>
+        );
+      })}
+    </>
   );
 };
-
-export default Note;
